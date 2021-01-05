@@ -12,11 +12,13 @@ import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Accessors(chain = true)
 @Table(name = "users")
 public class User {
 
@@ -33,8 +35,8 @@ public class User {
 	@Column(nullable = false)
 	private String password;
 
-	@Column(nullable = false)
-	private Boolean admin;
+    @Column(columnDefinition = "boolean default false")
+	private boolean admin;
 
 	@Column(name = "date_created", nullable = false)
 	private LocalDateTime dateCreated;
