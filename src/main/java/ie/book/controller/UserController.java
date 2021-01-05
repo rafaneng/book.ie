@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import ie.book.domain.User;
+import ie.book.requests.CredencialsPostRequestBody;
+import ie.book.requests.TokenPostRequestBody;
 import ie.book.requests.UserPostRequestBody;
 import ie.book.service.UserService;
 
@@ -50,6 +52,12 @@ public class UserController {
 	public ResponseEntity<Void> replace(@RequestBody User user) {
 		userService.replace(user);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	}
+
+	@PostMapping("/auth")
+	public ResponseEntity<TokenPostRequestBody> authenticate(
+			@RequestBody CredencialsPostRequestBody credencialsPostRequestBody) {
+		return userService.authenticateUser(credencialsPostRequestBody);
 	}
 
 }
