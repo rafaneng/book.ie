@@ -14,5 +14,5 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
 
 	Page<Request> findByUserId(Pageable pageable, Long id);
 
-	List<Request> findAllByBookId(Long id);
+	List<Request> findAllByBookIdAndStatus(Long id, RequestStatusEnum requestStatusEnum);
 }

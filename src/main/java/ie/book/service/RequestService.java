@@ -25,9 +25,9 @@ public class RequestService {
 	public Page<Request> listAll(Pageable pageable) {
 		return requestRepository.findAll(pageable);
 	}
-	
-	public List<Request> listAllBySameBook(Long id) {
-		return requestRepository.findAllByBookId(id);
+
+	public List<Request> listAllBySameBook(Long id,RequestStatusEnum requestStatusEnum) {
+		return requestRepository.findAllByBookIdAndStatus(id, requestStatusEnum);
 	}
 
 	public Page<Request> listPending(Pageable pageable) {
@@ -67,15 +67,10 @@ public class RequestService {
 
 	public void approveRequest(Long id) {
 
-		/*
-		 * Caso exista mais de um pedido para o mesmo livro, ao aprovar um pedido para
-		 * um cliente, os demais devem ser automaticamente recusados.
-		 */
-		rejectAllRequestBySameBook(id);
-
 		Request request = findByIdOrThrowBadRequestException(id);
 
-		bookService.changeStatusToUnavailable(request.getBook().getId());
+		rejectAllRequestBySameBook(request);
+		changeBookStatusToUnavailable(request.getBook().getId());
 
 		request.setStatus(RequestStatusEnum.APPROVED);
 
@@ -91,19 +86,19 @@ public class RequestService {
 		requestRepository.save(request);
 
 	}
-	
-	public List<Request> rejectAllRequestBySameBook(Long id) {
-		
-		Request request = findByIdOrThrowBadRequestException(id);
-		
-		List<Request> requests = listAllBySameBook(request.getBook().getId());
+
+	public void rejectAllRequestBySameBook(Request request) {
+
+		List<Request> requests = listAllBySameBook(request.getBook().getId(), request.getStatus());
 
 		requests.remove(request);
-		
+
 		requests.forEach(requestEach -> rejectRequest(requestEach.getId()));
-		
-		return requests;
-		
+
+	}
+
+	public void changeBookStatusToUnavailable(Long id) {
+		bookService.changeStatusToUnavailable(id);
 	}
 
 }
