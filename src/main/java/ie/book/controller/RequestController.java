@@ -50,6 +50,11 @@ public class RequestController {
 	public ResponseEntity<Page<Request>> listRejected(Pageable pageable) {
 		return new ResponseEntity<>(requestService.listRejected(pageable), HttpStatus.OK);
 	}
+	
+	@GetMapping(path = "/user/{id}")
+	public ResponseEntity<Page<Request>> listByUserId(Pageable pageable, Long id) {
+		return new ResponseEntity<>(requestService.listByUserId(pageable, id), HttpStatus.OK);
+	}
 
 	@PostMapping(path = "/add")
 	public ResponseEntity<Request> save(@RequestBody Request request) {

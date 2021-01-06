@@ -9,4 +9,6 @@ import ie.book.enums.RequestStatusEnum;
 
 public interface RequestRepository extends JpaRepository<Request, Long> {
 	Page<Request> findByStatus(Pageable pageable, RequestStatusEnum requestStatusEnum);
+
+	Page<Request> findByUserId(Pageable pageable, Long id);
 }

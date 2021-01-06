@@ -35,6 +35,10 @@ public class RequestService {
 	public Page<Request> listRejected(Pageable pageable) {
 		return requestRepository.findByStatus(pageable, RequestStatusEnum.REJECTED);
 	}
+	
+	public Page<Request> listByUserId(Pageable pageable, Long id) {
+		return requestRepository.findByUserId(pageable, id);
+	}
 
 	@Transactional
 	public Request save(Request request) {
