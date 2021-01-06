@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import ie.book.domain.User;
+import ie.book.domain.Users;
 import ie.book.requests.CredencialsPostRequestBody;
 import ie.book.requests.TokenPostRequestBody;
 import ie.book.requests.UserPostRequestBody;
@@ -28,17 +28,17 @@ public class UserController {
 	private UserService userService;
 
 	@GetMapping
-	public ResponseEntity<Page<User>> list(Pageable pageable) {
+	public ResponseEntity<Page<Users>> list(Pageable pageable) {
 		return new ResponseEntity<>(userService.listAll(pageable), HttpStatus.OK);
 	}
 
 	@GetMapping(path = "/{id}")
-	public ResponseEntity<User> findById(@PathVariable long id) {
+	public ResponseEntity<Users> findById(@PathVariable long id) {
 		return new ResponseEntity<>(userService.findByIdOrThrowBadRequestException(id), HttpStatus.OK);
 	}
 
 	@PostMapping
-	public ResponseEntity<User> save(@RequestBody UserPostRequestBody userPostRequestBody) {
+	public ResponseEntity<Users> save(@RequestBody UserPostRequestBody userPostRequestBody) {
 		return new ResponseEntity<>(userService.save(userPostRequestBody.build()), HttpStatus.CREATED);
 	}
 
@@ -49,7 +49,7 @@ public class UserController {
 	}
 
 	@PutMapping
-	public ResponseEntity<Void> replace(@RequestBody User user) {
+	public ResponseEntity<Void> replace(@RequestBody Users user) {
 		userService.replace(user);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}

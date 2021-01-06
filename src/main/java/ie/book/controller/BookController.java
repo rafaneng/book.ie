@@ -24,9 +24,19 @@ public class BookController {
 	@Autowired
 	private BookService bookService;
 
-	@GetMapping(path = "/list")
-	public ResponseEntity<Page<Book>> list(Pageable pageable) {
+	@GetMapping(path = "/all")
+	public ResponseEntity<Page<Book>> listAll(Pageable pageable) {
 		return new ResponseEntity<>(bookService.listAll(pageable), HttpStatus.OK);
+	}
+
+	@GetMapping(path = "/available")
+	public ResponseEntity<Page<Book>> listAvailable(Pageable pageable) {
+		return new ResponseEntity<>(bookService.listAvailable(pageable), HttpStatus.OK);
+	}
+
+	@GetMapping(path = "/unavailable")
+	public ResponseEntity<Page<Book>> listUnavailable(Pageable pageable) {
+		return new ResponseEntity<>(bookService.listUnavailable(pageable), HttpStatus.OK);
 	}
 
 	@GetMapping(path = "/{id}")
@@ -34,7 +44,7 @@ public class BookController {
 		return new ResponseEntity<>(bookService.findByIdOrThrowBadRequestException(id), HttpStatus.OK);
 	}
 
-	@PostMapping(path = "/save")
+	@PostMapping(path = "/add")
 	public ResponseEntity<Book> save(@RequestBody Book book) {
 		return new ResponseEntity<>(bookService.save(book), HttpStatus.CREATED);
 	}

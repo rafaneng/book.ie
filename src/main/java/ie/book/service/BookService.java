@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ie.book.domain.Book;
+import ie.book.enums.BookStatusEnum;
 import ie.book.exception.BadRequestException;
 import ie.book.repository.BookRepository;
 
@@ -18,6 +19,14 @@ public class BookService {
 
 	public Page<Book> listAll(Pageable pageable) {
 		return bookRepository.findAll(pageable);
+	}
+
+	public Page<Book> listAvailable(Pageable pageable) {
+		return bookRepository.findByStatus(pageable, BookStatusEnum.AVAILABLE);
+	}
+
+	public Page<Book> listUnavailable(Pageable pageable) {
+		return bookRepository.findByStatus(pageable, BookStatusEnum.UNAVAILABLE);
 	}
 
 	@Transactional
@@ -37,6 +46,22 @@ public class BookService {
 		Book savedBook = findByIdOrThrowBadRequestException(book.getId());
 		book.setId(savedBook.getId());
 		bookRepository.save(book);
+	}
+
+	public void changeStatusToAvailable(Long id) {
+		Book savedBook = findByIdOrThrowBadRequestException(id);
+
+		savedBook.setStatus(BookStatusEnum.AVAILABLE);
+
+		bookRepository.save(savedBook);
+	}
+	
+	public void changeStatusToUnavailable(Long id) {
+		Book savedBook = findByIdOrThrowBadRequestException(id);
+
+		savedBook.setStatus(BookStatusEnum.UNAVAILABLE);
+
+		bookRepository.save(savedBook);
 	}
 
 }

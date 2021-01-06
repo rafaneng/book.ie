@@ -2,7 +2,7 @@ package ie.book.requests;
 
 import java.time.LocalDateTime;
 
-import ie.book.domain.User;
+import ie.book.domain.Users;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,8 +17,8 @@ public class UserPostRequestBody {
 	private String password;
 	private LocalDateTime dateCreated;
 
-	public User build() {
-		User user = new User()
+	public Users build() {
+		Users user = new Users()
 				.setName(this.name)
 				.setEmail(this.email)
 				.setPassword(this.password)

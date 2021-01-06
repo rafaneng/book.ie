@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import ie.book.domain.User;
+import ie.book.domain.Users;
 import ie.book.exception.BadRequestException;
 import ie.book.exception.InvalidPasswordException;
 import ie.book.repository.UserRepository;
@@ -35,11 +36,11 @@ public class UserService implements UserDetailsService {
     @Autowired
 	private PasswordEncoder encoder;
 
-	public Page<User> listAll(Pageable pageable) {
+	public Page<Users> listAll(Pageable pageable) {
 		return userRepository.findAll(pageable);
 	}
 
-	public User findByIdOrThrowBadRequestException(long id) {
+	public Users findByIdOrThrowBadRequestException(long id) {
 		return userRepository.findById(id).orElseThrow(() -> new BadRequestException("User not found"));
 	}
 
@@ -47,14 +48,14 @@ public class UserService implements UserDetailsService {
 		userRepository.delete(findByIdOrThrowBadRequestException(id));
 	}
 
-	public void replace(User user) {
-		User savedUser = findByIdOrThrowBadRequestException(user.getId());
+	public void replace(Users user) {
+		Users savedUser = findByIdOrThrowBadRequestException(user.getId());
 		user.setId(savedUser.getId());
 		userRepository.save(user);
 	}
 
 	@Transactional
-	public User save(User user) {
+	public Users save(Users user) {
 		String encryptedPassword = passwordEncoder.encode(user.getPassword());
 		user.setPassword(encryptedPassword);
 		return userRepository.save(user);
@@ -62,7 +63,7 @@ public class UserService implements UserDetailsService {
 
 	public ResponseEntity<TokenPostRequestBody> authenticateUser(CredencialsPostRequestBody credencialsPostRequestBody) {
 		try {
-			User user = User.builder().email(credencialsPostRequestBody.getEmail()).password(credencialsPostRequestBody.getPassword()).build();
+			Users user = Users.builder().email(credencialsPostRequestBody.getEmail()).password(credencialsPostRequestBody.getPassword()).build();
 			authenticate(user);
 			String token = jwtService.addToken(user);
 			TokenPostRequestBody tokenPostRequestBody = new TokenPostRequestBody(user.getEmail(), token);
@@ -73,7 +74,7 @@ public class UserService implements UserDetailsService {
 		}
 	}
 
-	public UserDetails authenticate(User user) {
+	public UserDetails authenticate(Users user) {
 		UserDetails userDetails = loadUserByUsername(user.getEmail());
 		boolean validPassword = encoder.matches(user.getPassword(), userDetails.getPassword());
 
@@ -86,12 +87,12 @@ public class UserService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-		User user = userRepository.findByEmail(email)
+		Users user = userRepository.findByEmail(email)
 				.orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
 		String[] roles = user.isAdmin() ? new String[] { "ADMIN", "USER" } : new String[] { "USER" };
 
-		return org.springframework.security.core.userdetails.User
+		return User
 				.builder()
 				.username(user.getEmail())
 				.password(user.getPassword())

@@ -8,7 +8,7 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import ie.book.domain.User;
+import ie.book.domain.Users;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -23,7 +23,7 @@ public class JwtService {
 	@Value("${security.jwt.secret-key}")
 	private String secretKey;
 	
-	public String addToken(User user) {
+	public String addToken(Users user) {
 		long expString = Long.valueOf(expiration);
 		LocalDateTime dateHourExpiration = LocalDateTime.now().plusDays(expString);
 		Instant instant = dateHourExpiration.atZone(ZoneId.systemDefault()).toInstant();

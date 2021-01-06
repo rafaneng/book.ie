@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -11,6 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import ie.book.enums.RequestStatusEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,12 +28,13 @@ public class Request {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(nullable = false)
-	private Boolean status;
+	@Enumerated
+    @Column(columnDefinition = "int default 0", insertable = false)
+	private RequestStatusEnum status;
 	
 	@OneToOne()
 	@JoinColumn(name = "fk_id_user", nullable = false)
-	private User user;
+	private Users user;
 	
 	@OneToOne()
 	@JoinColumn(name = "fk_id_book", nullable = false)
