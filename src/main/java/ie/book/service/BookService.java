@@ -55,7 +55,7 @@ public class BookService {
 
 		bookRepository.save(savedBook);
 	}
-	
+
 	public void changeStatusToUnavailable(Long id) {
 		Book savedBook = findByIdOrThrowBadRequestException(id);
 
