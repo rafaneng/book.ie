@@ -1,5 +1,7 @@
 package ie.book.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +25,10 @@ public class RequestService {
 	public Page<Request> listAll(Pageable pageable) {
 		return requestRepository.findAll(pageable);
 	}
+	
+	public List<Request> listAllBySameBook(Long id) {
+		return requestRepository.findAllByBookId(id);
+	}
 
 	public Page<Request> listPending(Pageable pageable) {
 		return requestRepository.findByStatus(pageable, RequestStatusEnum.PENDING);
@@ -35,7 +41,7 @@ public class RequestService {
 	public Page<Request> listRejected(Pageable pageable) {
 		return requestRepository.findByStatus(pageable, RequestStatusEnum.REJECTED);
 	}
-	
+
 	public Page<Request> listByUserId(Pageable pageable, Long id) {
 		return requestRepository.findByUserId(pageable, id);
 	}
@@ -60,23 +66,44 @@ public class RequestService {
 	}
 
 	public void approveRequest(Long id) {
-		Request savedRequest = findByIdOrThrowBadRequestException(id);
 
-		bookService.changeStatusToUnavailable(savedRequest.getBook().getId());
+		/*
+		 * Caso exista mais de um pedido para o mesmo livro, ao aprovar um pedido para
+		 * um cliente, os demais devem ser automaticamente recusados.
+		 */
+		rejectAllRequestBySameBook(id);
 
-		savedRequest.setStatus(RequestStatusEnum.APPROVED);
+		Request request = findByIdOrThrowBadRequestException(id);
 
-		requestRepository.save(savedRequest);
+		bookService.changeStatusToUnavailable(request.getBook().getId());
+
+		request.setStatus(RequestStatusEnum.APPROVED);
+
+		requestRepository.save(request);
 
 	}
 
 	public void rejectRequest(Long id) {
-		Request savedRequest = findByIdOrThrowBadRequestException(id);
+		Request request = findByIdOrThrowBadRequestException(id);
 
-		savedRequest.setStatus(RequestStatusEnum.REJECTED);
+		request.setStatus(RequestStatusEnum.REJECTED);
 
-		requestRepository.save(savedRequest);
+		requestRepository.save(request);
 
+	}
+	
+	public List<Request> rejectAllRequestBySameBook(Long id) {
+		
+		Request request = findByIdOrThrowBadRequestException(id);
+		
+		List<Request> requests = listAllBySameBook(request.getBook().getId());
+
+		requests.remove(request);
+		
+		requests.forEach(requestEach -> rejectRequest(requestEach.getId()));
+		
+		return requests;
+		
 	}
 
 }

@@ -45,12 +45,12 @@ public class RequestController {
 	public ResponseEntity<Page<Request>> listApproved(Pageable pageable) {
 		return new ResponseEntity<>(requestService.listApproved(pageable), HttpStatus.OK);
 	}
-	
+
 	@GetMapping(path = "/rejected")
 	public ResponseEntity<Page<Request>> listRejected(Pageable pageable) {
 		return new ResponseEntity<>(requestService.listRejected(pageable), HttpStatus.OK);
 	}
-	
+
 	@GetMapping(path = "/user/{id}")
 	public ResponseEntity<Page<Request>> listByUserId(Pageable pageable, Long id) {
 		return new ResponseEntity<>(requestService.listByUserId(pageable, id), HttpStatus.OK);
@@ -72,13 +72,13 @@ public class RequestController {
 		requestService.replace(request);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
-	
+
 	@PatchMapping(path = "/approve/{id}")
 	public ResponseEntity<Void> approveRequest(@RequestParam Long id) {
 		requestService.approveRequest(id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
-	
+
 	@PatchMapping(path = "/reject/{id}")
 	public ResponseEntity<Void> rejectRequest(@RequestParam Long id) {
 		requestService.rejectRequest(id);
