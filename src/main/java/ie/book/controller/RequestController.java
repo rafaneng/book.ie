@@ -45,6 +45,11 @@ public class RequestController {
 	public ResponseEntity<Page<Request>> listApproved(Pageable pageable) {
 		return new ResponseEntity<>(requestService.listApproved(pageable), HttpStatus.OK);
 	}
+	
+	@GetMapping(path = "/rejected")
+	public ResponseEntity<Page<Request>> listRejected(Pageable pageable) {
+		return new ResponseEntity<>(requestService.listRejected(pageable), HttpStatus.OK);
+	}
 
 	@PostMapping(path = "/add")
 	public ResponseEntity<Request> save(@RequestBody Request request) {
