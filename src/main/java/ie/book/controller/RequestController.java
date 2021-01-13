@@ -55,6 +55,11 @@ public class RequestController {
 	public ResponseEntity<Page<Request>> listByUserId(Pageable pageable, Long id) {
 		return new ResponseEntity<>(requestService.listByUserId(pageable, id), HttpStatus.OK);
 	}
+	
+//	@GetMapping(path = "/books/{id}")
+//	public int countBooksByUser(Long id) {
+//		return requestService.verifyNumberOfBooksPerUser(id);
+//	}
 
 	@PostMapping(path = "/add")
 	public ResponseEntity<Request> save(@RequestBody Request request) {

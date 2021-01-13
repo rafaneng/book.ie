@@ -9,8 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ie.book.domain.Request;
+import ie.book.enums.BookStatusEnum;
 import ie.book.enums.RequestStatusEnum;
 import ie.book.exception.BadRequestException;
+import ie.book.exception.ForbiddenException;
 import ie.book.repository.RequestRepository;
 
 @Service
@@ -22,11 +24,13 @@ public class RequestService {
 	@Autowired
 	private BookService bookService;
 
+	private int maxBooksPerUser = 5;
+
 	public Page<Request> listAll(Pageable pageable) {
 		return requestRepository.findAll(pageable);
 	}
 
-	public List<Request> listAllBySameBook(Long id,RequestStatusEnum requestStatusEnum) {
+	public List<Request> listAllBySameBook(Long id, RequestStatusEnum requestStatusEnum) {
 		return requestRepository.findAllByBookIdAndStatus(id, requestStatusEnum);
 	}
 
@@ -48,7 +52,10 @@ public class RequestService {
 
 	@Transactional
 	public Request save(Request request) {
+		
+		verifyNumberOfBooksPerUser(request.getUser().getId());
 		return requestRepository.save(request);
+
 	}
 
 	public Request findByIdOrThrowBadRequestException(long id) {
@@ -89,7 +96,7 @@ public class RequestService {
 
 	public void rejectAllRequestBySameBook(Request request) {
 
-		List<Request> requests = listAllBySameBook(request.getBook().getId(), request.getStatus());
+		List<Request> requests = listAllBySameBook(request.getBook().getId(), RequestStatusEnum.PENDING);
 
 		requests.remove(request);
 
@@ -99,6 +106,16 @@ public class RequestService {
 
 	public void changeBookStatusToUnavailable(Long id) {
 		bookService.changeStatusToUnavailable(id);
+	}
+
+	public int verifyNumberOfBooksPerUser(Long id) {
+		
+		if(requestRepository.countByUserIdAndBook_Status(id, BookStatusEnum.UNAVAILABLE) > maxBooksPerUser) {
+			throw new ForbiddenException("Maximum limit of books for this user.");
+		}
+
+		return requestRepository.countByUserIdAndBook_Status(id, BookStatusEnum.UNAVAILABLE);
+
 	}
 
 }

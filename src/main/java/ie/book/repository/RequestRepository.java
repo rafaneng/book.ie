@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import ie.book.domain.Request;
+import ie.book.enums.BookStatusEnum;
 import ie.book.enums.RequestStatusEnum;
 
 public interface RequestRepository extends JpaRepository<Request, Long> {
@@ -15,4 +16,6 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
 	Page<Request> findByUserId(Pageable pageable, Long id);
 
 	List<Request> findAllByBookIdAndStatus(Long id, RequestStatusEnum requestStatusEnum);
+	
+	int countByUserIdAndBook_Status(Long id, BookStatusEnum bookStatusEnum);
 }
